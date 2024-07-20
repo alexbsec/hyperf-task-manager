@@ -6,7 +6,7 @@ use Hyperf\DbConnection\Model\Model;
 
 class User extends Model 
 {
-  protected array $fillable = ['name', 'email', 'password'];
+  protected array $fillable = ['name', 'email', 'password', 'token'];
   protected array $hidden = ['password'];
 }
 
