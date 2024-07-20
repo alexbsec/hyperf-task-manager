@@ -10,11 +10,16 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 use Hyperf\HttpServer\Router\Router;
+use App\Middleware\AuthenticationMiddleware;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\HttpController@index');
 
 Router::post('/register', 'App\Controller\AuthController@register');
 Router::post('/login', 'App\Controller\AuthController@login');
+Router::addGroup('/tasks', function () {
+    Router::get('', 'App\Controller\TaskController@index');
+    Router::post('', 'App\Controller\TaskController@create');
+}, ['middleware' => [AuthenticationMiddleware::class]]);
 
 Router::get('/favicon.ico', function () {
     return '';
