@@ -24,6 +24,7 @@
         "hyperf/engine": "^2.10",
         "hyperf/framework": "~3.1.0",
         "hyperf/guzzle": "~3.1.0",
+        "hyperf/http-message": "^3.1",
         "hyperf/http-server": "~3.1.0",
         "hyperf/json-rpc": "~3.1.0",
         "hyperf/logger": "~3.1.0",
@@ -34,7 +35,10 @@
         "hyperf/rpc": "~3.1.0",
         "hyperf/rpc-client": "~3.1.0",
         "hyperf/rpc-server": "~3.1.0",
-        "hyperf/tracer": "~3.1.0"
+        "hyperf/tracer": "~3.1.0",
+        "hyperf/utils": "^3.1",
+        "hyperf/validation": "^3.1",
+        "illuminate/support": "^11.16"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
