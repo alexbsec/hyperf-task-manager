@@ -16,13 +16,22 @@ class AuthController
 {
   public function register(RequestInterface $request, ValidatorFactoryInterface $validation)
   {
+      $messages = [
+        'email.unique' => 'Email already in use',
+        'required' => 'The :attribute field is required',
+        'string' => 'The :attribute field must be a string',
+        'email' => 'The :attribute field must be a valid email address',
+        'max' => 'The :attribute field must not exceed :max characters',
+        'min' => 'The :attribute field must be at least :min characters',
+      ];
       $validator = $validation->make(
           $request->all(),
           [
               'name' => 'required|string|max:255',
               'email' => 'required|string|email|max:255|unique:users',
               'password' => 'required|string|min:6',
-          ]
+          ],
+          $messages,
       );
 
       if ($validator->fails()) {
