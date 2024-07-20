@@ -19,6 +19,8 @@ Router::post('/login', 'App\Controller\AuthController@login');
 Router::addGroup('/tasks', function () {
     Router::get('', 'App\Controller\TaskController@index');
     Router::post('', 'App\Controller\TaskController@create');
+    Router::delete('/{id}', 'App\Controller\TaskController@delete');
+    Router::put('/{id}', 'App\Controller\TaskController@update');
 }, ['middleware' => [AuthenticationMiddleware::class]]);
 
 Router::get('/favicon.ico', function () {
