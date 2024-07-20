@@ -1,6 +1,6 @@
-# Introduction
+# Task Management System
 
-This is a skeleton application using the Hyperf framework. This application is meant to be used as a starting place for those looking to get their feet wet with Hyperf Framework.
+This is a simple Task Management System application using the Hyperf framework. This application allows users to register, log in, and manage their tasks. It serves as a starting place for those looking to get their feet wet with Hyperf Framework.
 
 # Requirements
 
@@ -16,48 +16,117 @@ When you don't want to use Docker as the basis for your running environment, you
    - Swow PHP extension >= 1.3
  - JSON PHP extension
  - Pcntl PHP extension
- - OpenSSL PHP extension （If you need to use the HTTPS）
- - PDO PHP extension （If you need to use the MySQL Client）
- - Redis PHP extension （If you need to use the Redis Client）
- - Protobuf PHP extension （If you need to use the gRPC Server or Client）
+ - OpenSSL PHP extension
+ - PDO PHP extension
+ - Redis PHP extension
+ - Protobuf PHP extension
 
 # Installation using Composer
 
-The easiest way to create a new Hyperf project is to use [Composer](https://getcomposer.org/). If you don't have it already installed, then please install as per [the documentation](https://getcomposer.org/download/).
-
-To create your new Hyperf project:
+First, you need to clone the repository with
 
 ```bash
-composer create-project hyperf/hyperf-skeleton path/to/install
+git clone https://github.com/your-username/task-manager.git
+cd task-manager
 ```
 
-If your development environment is based on Docker you can use the official Composer image to create a new Hyperf project:
+Once you have cloned the repository, you need to install the project dependencies using Composer. If you don't have Composer installed, you can follow the [Composer installation guide](https://getcomposer.org/download/).
 
 ```bash
-docker run --rm -it -v $(pwd):/app composer create-project --ignore-platform-reqs hyperf/hyperf-skeleton path/to/install
+composer install
 ```
 
-# Getting started
+Copy the .env.example file to create a new .env file and configure it with your database and other settings:
 
-Once installed, you can run the server immediately using the command below.
+```env
+# Environment
+APP_NAME=TaskManager
+APP_ENV=dev
+SCAN_CACHEABLE=false
+APP_DEBUG=true
+
+# Database Configuration
+DB_DRIVER=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=task_manager
+DB_USERNAME=root
+DB_PASSWORD=yourpassword
+
+# Redis Configuration
+REDIS_HOST=127.0.0.1
+REDIS_AUTH=null
+REDIS_PORT=6379
+REDIS_DB=0
+REDIS_TIMEOUT=0.0
+REDIS_READ_TIMEOUT=0.0
+REDIS_MAX_IDLE_TIME=60
+
+# Other Configuration
+LOG_CHANNEL=stack
+```
+
+Finally, run the migration:
 
 ```bash
-cd path/to/install
+php bin/hyperf.php migrate
+```
+
+And start the server:
+
+```bash
 php bin/hyperf.php start
 ```
 
-Or if in a Docker based environment you can use the `docker-compose.yml` provided by the template:
+# Example Usage
+
+
+## Register new user
+
+To register a new user to the task manager, send the POST request:
 
 ```bash
-cd path/to/install
-docker-compose up
+curl -X POST -H "Content-Type: application/json" -d '{"name": "John Doe", "email": "john@example.com", "password": "secret"}' http://localhost:9501/register
 ```
 
-This will start the cli-server on port `9501`, and bind it to all network interfaces. You can then visit the site at `http://localhost:9501/` which will bring up Hyperf default home page.
+## Login
 
-## Hints
+To login as an existing user, send the POST request:
 
-- A nice tip is to rename `hyperf-skeleton` of files like `composer.json` and `docker-compose.yml` to your actual project name.
-- Take a look at `config/routes.php` and `app/Controller/IndexController.php` to see an example of a HTTP entrypoint.
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"email": "john@example.com", "password": "secret"}' http://localhost:9501/login
+```
 
-**Remember:** you can always replace the contents of this README.md file to something that fits your project description.
+The response will give you the authorization bearer token.
+
+## Create a new Task
+
+To create a new task, you need the authorization token fetched on login.
+
+```bash
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer your_token_here" -d '{"title": "New Task", "description": "Task description"}' http://localhost:9501/tasks
+```
+
+## List tasks
+
+To list tasks, you must send the GET request:
+
+```bash
+curl -X GET -H "Authorization: Bearer your_token_here" http://localhost:9501/tasks
+```
+
+## Update tasks
+
+To update a given task, you send the PUT request:
+
+```bash
+curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer your_token_here" -d '{"title": "Updated Task", "description": "Updated description"}' http://localhost:9501/tasks/<task-number>
+```
+
+## Delete tasks
+
+To delete a task, you send the DELETE request:
+
+```bash
+curl -X DELETE -H "Authorization: Bearer your_token_here" http://localhost:9501/tasks/<task-number>
+```
