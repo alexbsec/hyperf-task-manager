@@ -6,7 +6,7 @@ use App\Model\User;
 use Hyperf\HttpServer\Annotation\AutoController;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpMessage\Server\Response;
-use Hyperf\Utils\Str;
+use Illuminate\Support\Str;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 
 /**
@@ -40,6 +40,39 @@ class AuthController
       $response = new Response();
       $response->getBody()->write(json_encode($user));
       return $response->withAddedHeader('Content-Type', 'application/json')->withStatus(201);
+  }
+
+  public function login(RequestInterface $request, ValidatorFactoryInterface $validation)
+  {
+    $validator = $validation->make(
+      $request->all(),
+      [
+        'email' => 'required|string|email|max:255',
+        'password' => 'required|string',
+      ],
+    );
+
+    if ($validator->fails()) {
+      $response = new Response();
+      $response->getBody()->write(json_encode(['errors' => $validator->errors()]));
+      return $response->withAddedHeader('Content-Type', 'application/json')->withStatus(422);
+    }
+
+    $user = User::where('email', $request->input('email'))->first();
+
+    if (!$user || !password_verify($request->input('password'), $user->password)) {
+      $response = new Response();
+      $response->getBody()->write(json_encode(['errors' => 'Invalid credentials']));
+      return $response->withAddedHeader('Content-Type', 'application/json')->withStatus(401);
+    }
+
+    $token = Str::random(60);
+    $user->token = $token;
+    $user->save();
+
+    $response = new Response();
+    $response->getBody()->write(json_encode(['bearer_token' => $token]));
+    return $response->withAddedHeader('Content-Type', 'application/json')->withStatus(200);
   }
 }
 
